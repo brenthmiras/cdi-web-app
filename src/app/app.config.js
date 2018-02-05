@@ -100,6 +100,9 @@ import ROLES from 'Helpers/permissions';
                 });
             }
         ])
+        .config(function($permissionProvider) {
+            $permissionProvider.suppressUndefinedPermissionWarning(true);
+        })
         .run([
             '$cookies',
             'QueryService',
@@ -107,11 +110,12 @@ import ROLES from 'Helpers/permissions';
             function($cookies, QueryService, PermPermissionStore) {
                 var user = $cookies.getObject('user') || {};
 
-                var permissions = ROLES[user.role || 'ADMIN'];
+                var permissions = ROLES[user.role || 'USER'];
                 PermPermissionStore.defineManyPermissions(permissions, function(
                     permissionName
                 ) {
-                    return permissions.includes(permissionName);
+                    if (permissions.includes(permissionName)) return true;
+                    else return false;
                 });
             }
         ]);
